@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useState } from "react";
 
 export default function Main() {
@@ -12,10 +13,21 @@ export default function Main() {
     setMeme((prev) => ({ ...prev, [name]: value }));
   }
 
-  // function handleBottomText(event) {
-  //   const { value, name } = event.currentTarget;
-  //   setMeme((prev) => ({ ...prev, [name]: value }));
-  // }
+  const [images, setImages] = useState({});
+
+  useEffect(() => {
+    fetch(`https://api.imgflip.com/get_memes`)
+      .then((res) => res.json())
+      .then((data) => setImages(data));
+  }, []);
+
+  function getImage() {
+    const number = Math.floor(Math.random() * images.data.memes.length);
+    setMeme((prev) => ({
+      ...prev,
+      imageUrl: images.data.memes[number].url,
+    }));
+  }
 
   return (
     <main>
@@ -41,7 +53,7 @@ export default function Main() {
             name="bottomText"
           />
         </label>
-        <button>Get a new meme image 🖼</button>
+        <button onClick={getImage}>Get a new meme image 🖼</button>
       </div>
       <div className="meme">
         <img src={meme.imageUrl} />
